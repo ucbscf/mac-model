@@ -1,0 +1,16 @@
+#!/bin/bash
+
+serial_no=$(system_profiler SPHardwareDataType | grep Serial | sed 's/.*: //')
+
+if [ "$(basename $0)" == "mac-serial" ]; then
+	echo $serial_no
+	exit 0
+fi
+
+config_code=$(echo $serial_no | cut -c 9-)
+
+curl -s https://support-sp.apple.com/sp/product?cc=$config_code | 
+	xmllint --format --xpath "string(//root/configCode)" -
+
+# add a carriage return; newer xmlint fixes this
+echo
